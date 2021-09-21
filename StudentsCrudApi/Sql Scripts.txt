@@ -1,0 +1,12 @@
+﻿CREATE TABLE Students
+(
+StudentId INT IDENTITY(1,1) PRIMARY KEY,
+FirstName VARCHAR(100),
+LastName VARCHAR(100),
+Gender VARCHAR(20),
+Age INT,
+EmailId VARCHAR(500),
+Address VARCHAR(500),
+City VARCHAR(200),
+Pincode VARCHAR(10)
+)
