@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using StudentsCrudApi.Filters;
 
 namespace StudentsCrudApi.Controllers
 {
@@ -24,7 +25,7 @@ namespace StudentsCrudApi.Controllers
             _logger = logger;
         }
 
-        
+        [ServiceFilter(typeof(StudentRequestResponseLoggerFilter))]        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Students>>> GetStudents()
         {
@@ -44,21 +45,18 @@ namespace StudentsCrudApi.Controllers
             
         }
 
+        [ServiceFilter(typeof(StudentRequestResponseLoggerFilter))]
         [HttpGet("{id}")]
         public async Task<ActionResult<Students>> GetStudent(int id)
         {
             try
             {
-                _logger.LogInformation("GetStudent : Begin.");
                 var student = await _db.Students.FindAsync(id);
 
                 if (student == null)
                 {
-                    _logger.LogInformation("GetStudent : Student not found.");
                     return NotFound(new { message = "Student not found." });
                 }
-                _logger.LogInformation("GetStudent Result : {0}", JsonConvert.SerializeObject(student).ToString());
-                _logger.LogInformation("GetStudent : End.");
                 return Ok(student);
             }
             catch (Exception ex)
@@ -68,17 +66,16 @@ namespace StudentsCrudApi.Controllers
             }
         }
 
+        [ServiceFilter(typeof(StudentRequestResponseLoggerFilter))]
         [HttpPost]
         public async Task<ActionResult<Students>> PostStudent(Students student)
         {
             try
             {
-                _logger.LogInformation("PostStudent : Begin.");
                 _db.Students.Add(student);
                
                 await _db.SaveChangesAsync();
 
-                _logger.LogInformation("PostStudent : End.");
                 return Ok(new { message = "Student Created Successfully." });
             }
             catch (Exception ex)
@@ -88,27 +85,24 @@ namespace StudentsCrudApi.Controllers
             }
         }
 
+        [ServiceFilter(typeof(StudentRequestResponseLoggerFilter))]
         [HttpPut("{id}")]
         public async Task<ActionResult<Students>> PutStudent(int id, Students student)
         {
             try
             {
-                _logger.LogInformation("PutStudent : Begin.");
                 if (id != student.StudentId)
                 {
-                    _logger.LogInformation("PutStudent : Bad Request.");
-                    return BadRequest(new { message = "Invalid data" });
+                    return BadRequest(new { message = "Invalid request data" });
                 }
                 if(!_db.Students.Any(e => e.StudentId == id))
                 {
-                    _logger.LogInformation("PutStudent : Student not found.");
                     return NotFound(new { message = "Student you are trying to update does not exists." });
                 }
                 _db.Entry(student).State=EntityState.Modified;
 
                 await _db.SaveChangesAsync();
 
-                _logger.LogInformation("PutStudent : End.");
                 return Ok(new { message = "Student Updated Successfully." });
             }
             catch (Exception ex)
@@ -118,25 +112,21 @@ namespace StudentsCrudApi.Controllers
             }
         }
 
-        // DELETE: api/Customer/5
+        [ServiceFilter(typeof(StudentRequestResponseLoggerFilter))]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Students>> DeleteStudent(int id)
         {
             try
             {
-                _logger.LogInformation("DeleteStudent : Begin.");
                 var student = await _db.Students.FindAsync(id);
                 if (student == null)
                 {
-                    _logger.LogInformation("DeleteStudent : Student not found.");
                     return NotFound(new { message = "Student not found." });
                 }
-                _logger.LogInformation("DeleteStudent Result : {0}", JsonConvert.SerializeObject(student).ToString());
-                _logger.LogInformation("DeleteStudent : End.");
                 _db.Students.Remove(student);
                 await _db.SaveChangesAsync();
 
-                return Ok(new { message = "Student Deleted." });
+                return Ok(new { message = "Student Deleted Successfully." });
             }
             catch (Exception ex)
             {

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using StudentsCrudApi.Filters;
 using StudentsCrudApi.Models;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,11 @@ namespace StudentsCrudApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            //services.AddControllers(config =>
+            //{
+            //    config.Filters.Add(typeof(CustomActionFilter));
+            //});
+            services.AddScoped<StudentRequestResponseLoggerFilter>();
             services.AddDbContextPool<SundayMobilityDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("StudentConString")));
         }
 
